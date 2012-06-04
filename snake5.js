@@ -667,7 +667,6 @@
 		}
 
 		function startPause() {
-			console.log(currentTime);
 			if ( currentTime > 0 ) {
 				isPause = !isPause;
 			} else {
