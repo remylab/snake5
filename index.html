@@ -10,12 +10,24 @@
         
         <title>Snake5 - Remylab</title>
         
-        <link href="jPaginator.css" rel="stylesheet" type="text/css" />
-        <link href="test1.css" rel="stylesheet" type="text/css" />
+        <link href="snake5.css" rel="stylesheet" type="text/css" />
         
         <!--[if lt IE 9]><script type="text/javascript" src="/js/css3-mediaqueries.js"></script><![endif]-->
         <script type="text/javascript" src="/js/jquery-1.5.1.min.js"></script>
         
+        
+        <script type="text/javascript" src="snake5.js"></script>
+        <script type="text/javascript">
+        $(document).ready(function(){
+        	
+        	AppSnake.setApp("snakecontainer");
+    
+            $(document).keydown(AppSnake.onKeyDown);
+            //$(document).keyup(AppSnake.onKeyUp);
+    
+        });
+        </script>
+
         <script type="text/javascript" src="/js/ga.js"></script>
     </head>
 
@@ -42,6 +54,26 @@
             </nav>
             
             <section id="main_content" class="inner">
+            
+                <!-- THE GAME -->
+                <div id="appsnake">
+            
+                    <canvas id="snakecontainer"></canvas>
+            
+                    <br/>
+            
+                    <div id="controls">
+                        <a href="#" onclick="AppSnake.startGame();">Start</a>
+                        <br/>
+                        (Pause: Barre d'espace)
+                    </div>
+            
+                    <ul id="snakelog"></ul>
+                </div>
+                <img class="invisible" id="appleimg" src="apple.png"/>
+                <img class="invisible" id="snakehead" src="snakehead.png"/>
+                <img class="invisible" id="mouse1" src="mouse1.png"/>
+                <img class="invisible" id="mouse2" src="mouse2.png"/>
     
             </section>
             
