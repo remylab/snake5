@@ -259,7 +259,7 @@
 		var blocSize = 10;
 		var isPause = false;
 		var appW = 480;
-		var appH = 300;
+		var appH = 320;
 		var currentTime = 0;
 		var idMove = 0;
 		var sMoveAction = "";
@@ -665,9 +665,14 @@
 			snake.logSnake();
 		}
 
-		function pause() {
-			isPause = !isPause;
+		function startPause() {
+			if ( currentTime > 0) {
+				isPause = !isPause;
+			} else {
+				AppSnake.startGame();
+			}
 		}
+		
 
 		function GameOver() {
 			clearInterval(idMove);
@@ -733,14 +738,14 @@
 				console.log(evt.keyCode);
 				
 				// arrows key : 38, 39, 40, 37
-				// WASD : 87, 65, 83, 68
+				// WASD : 87, 68, 83, 65
 
 				var sDir = '';
-				if		(evt.keyCode == 38) sDir = 'N';
-				else if (evt.keyCode == 39) sDir = 'E';
-				else if (evt.keyCode == 40) sDir = 'S';
-				else if (evt.keyCode == 37) sDir = 'O';
-				else if (evt.keyCode == 32) pause();
+				if		(evt.keyCode == 87) sDir = 'N';
+				else if (evt.keyCode == 68) sDir = 'E';
+				else if (evt.keyCode == 83) sDir = 'S';
+				else if (evt.keyCode == 65) sDir = 'O';
+				else if (evt.keyCode == 32) startPause();
 
 				if (sMoveAction == "" && sDir != "") sMoveAction = sDir; 
 			},

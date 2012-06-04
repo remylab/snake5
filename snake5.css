@@ -7,8 +7,7 @@ canvas#snakecontainer {
 	background-color:#E4D6AE ;
 }
 div#appsnake {
-    width:480px;
-    padding:0 0 0 100px;
+	text-align:center;
 }
 ul#snakelog {
     text-align:center;
