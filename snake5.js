@@ -279,6 +279,7 @@
         var INIT_SPEED = 150
 		var actionSpeed = 0;
         var numLevel = 1;
+        var isGameOver = false;
         
         var gridMap = new GridMap();
 
@@ -666,7 +667,8 @@
 		}
 
 		function startPause() {
-			if ( currentTime > 0) {
+			console.log(currentTime);
+			if ( currentTime > 0 ) {
 				isPause = !isPause;
 			} else {
 				AppSnake.startGame();
@@ -677,7 +679,7 @@
 		function GameOver() {
 			clearInterval(idMove);
 			idMove = 0;
-			var currentTime = 0;
+			currentTime = 0;
 
 			var img = new Image();   // Create new Image object
 			img.onload = function(){
