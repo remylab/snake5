@@ -677,6 +677,7 @@
 		function GameOver() {
 			clearInterval(idMove);
 			idMove = 0;
+			var currentTime = 0;
 
 			var img = new Image();   // Create new Image object
 			img.onload = function(){
