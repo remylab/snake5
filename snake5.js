@@ -2,6 +2,8 @@
 
 	var IE, isIE = true;
 	if ( IE === undefined) isIE = false;
+
+
 	
 	function GridMap() {
 		var that = {};
@@ -26,6 +28,17 @@
 	    }
 		that.reset = function() {
 			that.map = [];
+		}
+		that.getList = function() {
+			var list = [];
+			for(var i in that.map) {
+			    var t = that.map[i];
+			    for(var j in t) {
+			    	var obj = {x:i,y:j,val:t[j]};
+			    	list.push(obj);
+			    }
+			}
+			return list;
 		}
 		return that;
 	}
@@ -252,14 +265,20 @@
 		that.addParts(initSnakeSize);
 		return that;
 	}
+	
+
+	
 	/* singleton to manage the game */
 	var AppSnake = function() {
+		
+		// APP INIT
+		var isReady=false
 		var ctx;
 		var snake;
-		var blocSize = 10;
+		var blocSize = 13;
 		var isPause = false;
-		var appW = 480;
-		var appH = 320;
+		var appW = 468;
+		var appH = 299;
 		var currentTime = 0;
 		var idMove = 0;
 		var sMoveAction = "";
@@ -281,7 +300,16 @@
         var numLevel = 1;
         var isGameOver = false;
         
-        var gridMap = new GridMap();
+        var appleMap = new GridMap();
+        var mouseMap = new GridMap();
+        
+        var arrowSize = 80;
+        var controlPos = {
+			u:{x:appW/2-arrowSize/2,y:20} , 
+			r:{x:appW-20-arrowSize,y:appH/2-arrowSize/2} , 
+			d:{x:appW/2-arrowSize/2,y:appH-20-arrowSize} , 
+			l:{x:20 ,y:appH/2-arrowSize/2} 
+        };
 
 		//private functions
         function initCanvas() {
@@ -306,8 +334,8 @@
                 
 				//snake.logSnake();
                 cycle1000 = 0;
-                // toute les secondes : 1 chance sur 3 de faire pousser une pomme
-                var numApple = Math.floor( getRandom(1,3)/3 );
+                // toute les secondes : 1 chance sur 5 de faire pousser une pomme
+                var numApple = Math.floor( getRandom(1,5)/5 );
                 addRandomApple(numApple);
 
                 // toute les secondes : 1 chance sur 20 de faire pousser une souris
@@ -353,20 +381,11 @@
 
             if (!isGameOver) {
                 // eat an apple ?
-            	var mapObj = gridMap.getValue(hPos.x, hPos.y);
-            	if ( mapObj.type == "apple" ) {
+            	if ( appleMap.getValue(hPos.x, hPos.y) ) {
             		onAppleEaten();
-                    appleList[mapObj.index] = false;
-            		gridMap.deleteValue(hPos.x, hPos.y)
+            		appleMap.deleteValue(hPos.x, hPos.y)
             	}
-    			
-                /*for(i=0;i<appleList.length;i++) {
-                    var aC = appleList[i];
-                    if (aC.x==hPos.x && aC.y==hPos.y) {
-                        appleList.splice(i,1);
-                        onAppleEaten();
-                    }
-                }*/
+            	
                 // eat an mouse ?
                 for(j=0;j<mouseList.length;j++) {
                     var aM = mouseList[j];
@@ -387,20 +406,21 @@
                     pendingParts -= 1;
                 }
             }
-            //drawAppleList();
+            
+            showGame();
+		}
+		function showGame() {
+
+            showControls()	
             drawMouseList();
-            drawMap();
+            drawAppleMap();
             showSnake();
 		}
-		function drawMap() {
-			for(var i in gridMap.map) {
-				var t = gridMap.map[i];
-			    for(var j in t) {
-			    	var mapObj = t[j];
-			    	if ( t[j].type == "apple") {
-			    		drawApple({"x":i,"y":j});
-			    	}
-			    }
+		function drawAppleMap() {
+			var a = appleMap.getList();
+			for (var i = 0; i < a.length; i++) {
+				var o = a[i];
+				drawApple({"x":o.x,"y":o.y});
 			}
 		}
         function moveAllMouse() {
@@ -457,7 +477,7 @@
         }
         function onAppleEaten() {
             pendingParts += 1;
-            if (appleList.length<1) addRandomApple(1);
+            if (appleMap.getList.length<1) addRandomApple(1);
 
             nbAppleEaten += 1; checkLevel();
             $("#snakemenu .nbapple").html("<p>"+nbAppleEaten+"</p>");
@@ -521,10 +541,9 @@
         }
 		function drawHead(part) {
 			
-			//drawBall(part,"#FFFC45"); return;
-			drawSquare(part,"#FFFC45"); return;
+			drawSquare(part,"#1D9D41"); return;
 			
-			var img = document.getElementById("snakehead");
+			var img = Globals.Loader.getAsset('snakehead');
 
 			var rot=0;
 			if (part.dir == "E") {
@@ -581,43 +600,37 @@
             ctx.stroke();
         }
         function addRandomApple(n){
+        	
+        	if ( n < 1 ) return;
 
-            var nbFound = 0;
-            while (nbFound<n) {
-                var Ax = getRandom(0,(appW/blocSize)-1)*blocSize;
-                var Ay = getRandom(0,(appH/blocSize)-1)*blocSize;
-                var coord = {"x":Ax,"y":Ay};
+        	if ( appleMap.getList().length > 19 ) return;
 
-                if ( !snake.hitObject(coord) && !gridMap.getValue(Ax,Ay) ) {
-                	
-                	var mapObj = {};
-                	mapObj.type = "apple";
-                	mapObj.pos = appleList.length-1;
-                	gridMap.update(Ax,Ay,mapObj);
-                	
-                    appleList[appleList.length] = coord;
-                    drawApple(coord);
-                    nbFound += 1;
+            var Ax = getRandom(0,(appW/blocSize)-1)*blocSize;
+            var Ay = getRandom(0,(appH/blocSize)-1)*blocSize;
+            var coord = {"x":Ax,"y":Ay};
+        	
+            if ( !snake.hitObject(coord) && !appleMap.getValue(Ax,Ay) ) {
+            	
+            	appleMap.update(Ax,Ay,"apple");
+                drawApple(coord);
 
-                }
             }
         }
         function addRandomMouse(n){
+        	
+        	if ( n < 1 ) return;
 
-            var nbFound = 0;
-			var Ax = 0, Ay = 0;
-            while (nbFound<n) {
-                Ax = getRandom(0,(appW/blocSize)-1)*blocSize;
-                Ay = getRandom(0,(appH/blocSize)-1)*blocSize;
-                nbFound += 1;
-                var newDir = "O"
-                var numDir = getRandom(1,4);
-                if (numDir==1) newDir = "N";
-                if (numDir==2) newDir = "S";
-                if (numDir==3) newDir = "E";
+			if ( mouseList.length > 4 ) return;
+            Ax = getRandom(0,(appW/blocSize)-1)*blocSize;
+            Ay = getRandom(0,(appH/blocSize)-1)*blocSize;
+            
+            var newDir = "O"
+            var numDir = getRandom(1,4);
+            if (numDir==1) newDir = "N";
+            if (numDir==2) newDir = "S";
+            if (numDir==3) newDir = "E";
 
-                mouseList[mouseList.length] = {"x":Ax,"y":Ay,"dir":newDir};
-            }
+            mouseList[mouseList.length] = {"x":Ax,"y":Ay,"dir":newDir};
         }
         function getRandom(min, max) {
             return Math.floor(Math.random() * (max - min + 1) + min);
@@ -631,7 +644,7 @@
         }
         function drawApple(coord) {
             //drawBall(coord,APPLE_COLOR);
-            var img = document.getElementById("appleimg");
+            var img = Globals.Loader.getAsset('apple');
             ctx.drawImage(img,coord.x-blocSize/3,coord.y-blocSize/3,blocSize*1.5,blocSize*1.5);
         }
         function drawMouse(mouse) {
@@ -641,7 +654,7 @@
 			}
 
             var num = Math.floor( getRandom(1,2)/2 )+1;
-            var img = document.getElementById("mouse"+num);
+            var img = Globals.Loader.getAsset('mouse'+num);
 
             var rot=0;
             if (mouse.dir == "E") {
@@ -667,35 +680,88 @@
 		}
 
 		function startPause() {
+			if ( !isReady ) return; 
 			if ( currentTime > 0 ) {
 				isPause = !isPause;
 			} else {
 				AppSnake.startGame();
 			}
 		}
-		
-
 		function GameOver() {
 			clearInterval(idMove);
 			idMove = 0;
 			currentTime = 0;
 
-			var img = new Image();   // Create new Image object
-			img.onload = function(){
+			var img = Globals.Loader.getAsset('gameover');
+			
+            var iX = (appW-img.width)/2;
+            var iY = (appH-img.height)/2;
 
-                var iX = (appW-img.width)/2;
-                var iY = (appH-img.height)/2;
+			ctx.save();
+			ctx.globalAlpha = 0.3;
+			ctx.drawImage(img,iX,iY,img.width,img.height);
+			ctx.restore();
 
-				ctx.save();
-				ctx.globalAlpha = 0.3;
-				ctx.drawImage(img,iX,iY,img.width,img.height);
-				ctx.restore();
-			}
-			img.src = 'game_over.jpg';
+		}
+		
+		function showControls() {
+			var img = Globals.Loader.getAsset('arrowup');
+			var pos = controlPos ;	
+			
+			drawSquare(pos,'#000000');
+			
+			ctx.globalAlpha = 0.3;
+			
+			// arrow up
+			ctx.drawImage(img,pos.u.x,pos.u.y,arrowSize,arrowSize);
 
+			var rot,r0 ;
+            // arrow right
+            rot = 90; rO = getRotationObj(rot,pos.r.x,pos.r.y,arrowSize,arrowSize);
+			ctx.save();
+            ctx.rotate(rot*Math.PI/180);
+            ctx.drawImage(img,rO.x,rO.y,rO.w,rO.h);
+            ctx.restore();
+
+            // arrow down
+            rot = 180; rO = getRotationObj(rot,pos.d.x,pos.d.y,arrowSize,arrowSize);
+            ctx.save();
+            ctx.rotate(rot*Math.PI/180);
+            ctx.drawImage(img,rO.x,rO.y,rO.w,rO.h);
+            ctx.restore();
+
+            // arrow left
+            rot = 270 ; rO = getRotationObj(rot,pos.l.x,pos.l.y,arrowSize,arrowSize);
+            ctx.save();
+            ctx.rotate(rot*Math.PI/180);
+            ctx.drawImage(img,rO.x,rO.y,rO.w,rO.h);
+            ctx.restore();
+
+
+			ctx.globalAlpha = 1;
+			
+
+		}
+		
+		function relMouseCoords(e){
+		    var mouseX, mouseY;
+
+		    if(e.offsetX) {
+		        mouseX = e.offsetX;
+		        mouseY = e.offsetY;
+		    }
+		    else if(e.layerX) {
+		        mouseX = e.layerX;
+		        mouseY = e.layerY;
+		    }
+		    return {x:mouseX, y:mouseY}
 		}
 
 		return {
+			
+			appReady : function () {
+				isReady = true;
+			},
 			setApp:function(id){
 				var app = $("#"+id);
 				ctx = app[0].getContext("2d");
@@ -705,7 +771,7 @@
                 appleList = [];
                 mouseList = [];
                 
-                gridMap.reset();
+                appleMap.reset();
 
 				ctx.clearRect(0, 0, appW, appH);
 
@@ -732,12 +798,11 @@
                 initCanvas();
 
 				initMove();
-				showSnake();
+				showGame();
 
 			},
 			onKeyDown: function(evt) {
 
-				console.log(evt.keyCode);
 				
 				// arrows key : 38, 39, 40, 37
 				// WASD : 87, 68, 83, 65
@@ -747,15 +812,124 @@
 				else if (evt.keyCode == 68) sDir = 'E';
 				else if (evt.keyCode == 83) sDir = 'S';
 				else if (evt.keyCode == 65) sDir = 'O';
+				
+				else if	(evt.keyCode == 38) sDir = 'N';
+				else if (evt.keyCode == 39) sDir = 'E';
+				else if (evt.keyCode == 40) sDir = 'S';
+				else if (evt.keyCode == 37) sDir = 'O';
 				else if (evt.keyCode == 32) startPause();
 
 				if (sMoveAction == "" && sDir != "") sMoveAction = sDir; 
 			},
-			onKeyUp: function(evt) {
+			onClick: function(e) {
+				var click = relMouseCoords(e);
+				var sDir = '';
+				if ( click.y < appH/3 && click.x > appW/3 && click.x < appW*2/3) {
+					sDir = 'N';
+				} else if ( click.y > appH*2/3 && click.x > appW/3 && click.x < appW*2/3) {
+					sDir = 'S';			
+				} else if ( click.x > appW*2/3) {
+					sDir = 'E';
+				} else if ( click.x < appW/3) {
+					sDir = 'O';	
+				}
+				
 
+				if (sMoveAction == "" && sDir != "") sMoveAction = sDir; 
+				console.log(click.x + ", " + click.y + " dir :" + sDir);
 			},
             getAppSize:function() {
               return {"w":appW,"h":appH};
             }
 		};
-	}();
+		
+	}(); 
+	var Loader;
+
+	Loader = (function() {
+
+	  function Loader() {
+	    this.progress = 0;
+	    this.assets = {};
+	    this.totalAssets = 0;
+	    this.loadedAssets = 0;
+	  }
+
+	  Loader.prototype.load = function(assets) {
+	    var asset, name, _results;
+	    _results = [];
+	    for (name in assets) {
+	      asset = assets[name];
+	      _results.push(this.loadAsset(name, asset));
+	    }
+	    return _results;
+	  };
+
+	  Loader.prototype.loadProgress = function(func) {
+	    return this.onprogress = func;
+	  };
+
+	  Loader.prototype.loadComplete = function(func) {
+	    return this.onload = func;
+	  };
+
+	  Loader.prototype.updateProgress = function() {
+	    this.progress = this.loadedAssets / this.totalAssets;
+	    if (this.onprogress) this.onprogress(this.progress);
+	    if (this.progress === 1 && this.onload) return this.onload();
+	  };
+
+	  Loader.prototype.loadAsset = function(name, asset) {
+	    var basePath, img, loader;
+	    img = new Image();
+	    loader = this;
+	    img.onload = function() {
+	      this.loaded = true;
+	      loader.loadedAssets++;
+	      return loader.updateProgress();
+	    };
+	    this.assets[name] = {
+	      loader: this,
+	      src: asset,
+	      image: img
+	    };
+	    this.totalAssets++;
+	    basePath = window && window.basePath ? window.basePath : '';
+	    return img.src = basePath + asset;
+	  };
+
+	  Loader.prototype.getAsset = function(name) {
+	    return this.assets[name]['image'];
+	  };
+
+	  return Loader;
+
+	})();
+
+	var Globals;
+
+	Globals = {
+	  Loader: new Loader()
+	};
+	
+	// do something when all your images are loaded ... 
+	Globals.Loader.loadComplete(function(progress) {
+	    console.log(" app ready");
+	    $("#controls").show();
+	    AppSnake.appReady();
+
+	});
+	var Constants;
+
+	Constants = {
+	    ASSETS: {
+	        snakehead: 'snakehead.png',
+	        mouse1: 'mouse1.png',
+	        mouse2: 'mouse2.png',
+	        apple: 'apple.png',
+	        arrowup: 'arrowup.png',
+	        gameover: 'game_over.jpg',
+	    }
+	}
+	Globals.Loader.load(Constants.ASSETS);
+	

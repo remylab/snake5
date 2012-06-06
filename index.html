@@ -22,13 +22,22 @@
         	
         	AppSnake.setApp("snakecontainer");
     
-            $(document).keydown(AppSnake.onKeyDown);
-            //$(document).keyup(AppSnake.onKeyUp);
+            $(document).bind('keydown',AppSnake.onKeyDown);
+            $("#snakecontainer").bind('click',AppSnake.onClick);
     
         });
         </script>
 
         <script type="text/javascript" src="/js/ga.js"></script>
+        
+        <style type="text/css">
+            body * {
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+            }
+            .inner {
+                padding: 20px 0 20px 0;
+            }
+        </style>
     </head>
 
     <body>
@@ -56,23 +65,15 @@
             <section id="main_content" class="inner">
 
             
-                <div id="controls">
-                    <a href="#" onclick="AppSnake.startGame();">controls : WASD , start/pause : space bar</a>
+                <div id="controls" style="display:none;">
+                    <a href="#" onclick="AppSnake.startGame();">START (WASD start/pause = space bar)</a>
                 </div>
                 
                 <!-- THE GAME -->
                 <div id="appsnake">
             
                     <canvas id="snakecontainer"></canvas>
-            
-                    <br/>
-            
-                    <ul id="snakelog"></ul>
                 </div>
-                <img class="invisible" id="appleimg" src="apple.png"/>
-                <img class="invisible" id="snakehead" src="snakehead.png"/>
-                <img class="invisible" id="mouse1" src="mouse1.png"/>
-                <img class="invisible" id="mouse2" src="mouse2.png"/>
     
             </section>
             
