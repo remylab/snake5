@@ -275,10 +275,10 @@
 		var isReady=false
 		var ctx;
 		var snake;
-		var blocSize = 10;
+		var blocSize = 13;
 		var isPause = false;
-		var appW = 480;
-		var appH = 300;
+		var appW = 468;
+		var appH = 299;
 		var currentTime = 0;
 		var idMove = 0;
 		var sMoveAction = "";
@@ -303,7 +303,7 @@
         var appleMap = new GridMap();
         var mouseMap = new GridMap();
         
-        var arrowSize = 50;
+        var arrowSize = 80;
         var controlPos = {
 			u:{x:appW/2-arrowSize/2,y:20} , 
 			r:{x:appW-20-arrowSize,y:appH/2-arrowSize/2} , 
@@ -541,8 +541,7 @@
         }
 		function drawHead(part) {
 			
-			//drawBall(part,"#FFFC45"); return;
-			drawSquare(part,"#FFFC45"); return;
+			drawSquare(part,"#1D9D41"); return;
 			
 			var img = Globals.Loader.getAsset('snakehead');
 
