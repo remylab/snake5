@@ -305,10 +305,10 @@
         
         var arrowSize = 50;
         var controlPos = {
-			u:{x:20,y:80} , 
-			r:{x:appW-20-arrowSize,y:80} , 
-			d:{x:20,y:appH-80-arrowSize} , 
-			l:{x:appW-20-arrowSize,y:appH-80-arrowSize} 
+			u:{x:appW/2-arrowSize/2,y:20} , 
+			r:{x:appW-20-arrowSize,y:appH/2-arrowSize/2} , 
+			d:{x:appW/2-arrowSize/2,y:appH-20-arrowSize} , 
+			l:{x:20 ,y:appH/2-arrowSize/2} 
         };
 
 		//private functions
@@ -825,15 +825,16 @@
 			onClick: function(e) {
 				var click = relMouseCoords(e);
 				var sDir = '';
-				if ( click.x < appW/2 && click.y < appH/2) {
+				if ( click.y < appH/3 && click.x > appW/3 && click.x < appW*2/3) {
 					sDir = 'N';
-				} else if ( click.x > appW/2 && click.y < appH/2) {
+				} else if ( click.y > appH*2/3 && click.x > appW/3 && click.x < appW*2/3) {
+					sDir = 'S';			
+				} else if ( click.x > appW*2/3) {
 					sDir = 'E';
-				} else if ( click.x > appW/2 && click.y > appH/2) {
-					sDir = 'O';					
-				} else if ( click.x < appW/2 && click.y > appH/2) {
-					sDir = 'S';					
+				} else if ( click.x < appW/3) {
+					sDir = 'O';	
 				}
+				
 
 				if (sMoveAction == "" && sDir != "") sMoveAction = sDir; 
 				console.log(click.x + ", " + click.y + " dir :" + sDir);
