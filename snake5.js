@@ -5,6 +5,20 @@
 
 
 	
+	function relMouseCoords(e){
+	    var mouseX, mouseY;
+
+	    if(e.offsetX) {
+	        mouseX = e.offsetX;
+	        mouseY = e.offsetY;
+	    }
+	    else if(e.layerX) {
+	        mouseX = e.layerX;
+	        mouseY = e.layerY;
+	    }
+	    return {x:mouseX, y:mouseY}
+	}
+	
 	function GridMap() {
 		var that = {};
 		that.map = [];
@@ -742,20 +756,6 @@
 			
 
 		}
-		
-		function relMouseCoords(e){
-		    var mouseX, mouseY;
-
-		    if(e.offsetX) {
-		        mouseX = e.offsetX;
-		        mouseY = e.offsetY;
-		    }
-		    else if(e.layerX) {
-		        mouseX = e.layerX;
-		        mouseY = e.layerY;
-		    }
-		    return {x:mouseX, y:mouseY}
-		}
 
 		return {
 			
@@ -917,18 +917,19 @@
 	    console.log(" app ready");
 	    $("#controls").show();
 	    AppSnake.appReady();
+	    AppSnake.startGame();
 
 	});
 	var Constants;
 
 	Constants = {
 	    ASSETS: {
-	        snakehead: 'snakehead.png',
-	        mouse1: 'mouse1.png',
-	        mouse2: 'mouse2.png',
-	        apple: 'apple.png',
-	        arrowup: 'arrowup.png',
-	        gameover: 'game_over.jpg',
+	        snakehead: '/snake5/snakehead.png',
+	        mouse1: '/snake5/mouse1.png',
+	        mouse2: '/snake5/mouse2.png',
+	        apple: '/snake5/apple.png',
+	        arrowup: '/snake5/arrowup.png',
+	        gameover: '/snake5/game_over.jpg',
 	    }
 	}
 	Globals.Loader.load(Constants.ASSETS);
